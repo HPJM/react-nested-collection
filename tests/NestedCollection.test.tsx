@@ -50,7 +50,7 @@ const TestComponent = ({
         createChild={({ comment }, { position, depth }) =>
           `${position + 1}. ${comment} (${depth})`
         }
-        createCollapseButton={(child, { position, depth }) =>
+        createCollapseButton={(isCollapsed, { position, depth }) =>
           `Collapse ${depth}:${position + 1}`
         }
         childProps={(meta) => ({
