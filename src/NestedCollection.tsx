@@ -182,6 +182,11 @@ export const NestedCollection = <T,>(
         const childrenExist = hasChildren(child);
         const showChildren = !collapsed.includes(child.id) && childrenExist;
 
+        const button = childrenExist && renderCollapseButton(updatedEvent);
+
+        const beforeButton = collapseButtonPosition === "before" && button;
+        const afterButton = collapseButtonPosition === "after" && button;
+
         return (
           <React.Fragment key={child.id}>
             <li
@@ -190,9 +195,7 @@ export const NestedCollection = <T,>(
               {...generateLIProps(childProps, updatedEvent)}
             >
               {createChild(child.data, updatedEvent)}
-              {collapseButtonPosition === "before" &&
-                childrenExist &&
-                renderCollapseButton(updatedEvent)}
+              {beforeButton}
               {showChildren && (
                 <NestedCollection
                   {...props}
@@ -201,9 +204,7 @@ export const NestedCollection = <T,>(
                   depth={depth + 1}
                 />
               )}
-              {collapseButtonPosition === "after" &&
-                childrenExist &&
-                renderCollapseButton(updatedEvent)}
+              {afterButton}
             </li>
           </React.Fragment>
         );
