@@ -65,7 +65,7 @@ const TestComponent = ({
 
 describe("NestedCollection", () => {
   test("renders all children", () => {
-    const { queryByText, debug } = render(<TestComponent />);
+    const { queryByText } = render(<TestComponent />);
     // Top level
     expect(queryByText(`1. ${comment1.comment} (0)`)).toBeInTheDocument();
     expect(queryByText(`2. ${comment2.comment} (0)`)).toBeInTheDocument();
