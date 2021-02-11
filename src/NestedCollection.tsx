@@ -6,6 +6,7 @@ import {
   generateLIProps,
   generateStyle,
   generateULProps,
+  generateClassName,
   hasChildren,
 } from "./utils";
 
@@ -71,7 +72,7 @@ export const NestedCollection = <T,>(
 
   return (
     <ul
-      className={parentClass}
+      className={generateClassName(parentClass, event)}
       style={generateStyle(parentStyle, event)}
       {...generateULProps(parentProps, event)}
     >
@@ -92,7 +93,7 @@ export const NestedCollection = <T,>(
         return (
           <React.Fragment key={child.id}>
             <li
-              className={childClass}
+              className={generateClassName(childClass, event)}
               style={generateStyle(childStyle, event)}
               {...generateLIProps(childProps, updatedEvent)}
             >

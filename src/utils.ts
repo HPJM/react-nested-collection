@@ -52,3 +52,12 @@ export const generateStyle = <T>(
   }
   return obj;
 };
+export const generateClassName = <T>(
+  className: string | ((event: NCEvent<T>) => string),
+  event: NCEvent<T>
+): string => {
+  if (typeof className === "function") {
+    return className(event);
+  }
+  return className;
+};
