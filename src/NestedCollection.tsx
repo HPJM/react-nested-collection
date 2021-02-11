@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NCEvent, NestedCollectionProps } from "./types";
+import { NCEvent, NestedCollectionProps, Child } from "./types";
 
 import {
   generateButtonProps,
@@ -9,11 +9,19 @@ import {
   hasChildren,
 } from "./utils";
 
+const renderChildren = <T,>(child: Child<T>, childKey?: string): Child<T>[] => {
+  if (childKey && childKey in child) {
+    return child[childKey];
+  }
+  return child.children;
+};
+
 export const NestedCollection = <T,>(
   props: NestedCollectionProps<T>
 ): JSX.Element => {
   const {
     data,
+    childKey,
     parentClass,
     parentStyle,
     createChild,
@@ -74,9 +82,8 @@ export const NestedCollection = <T,>(
           position: index,
         };
 
-        const childrenExist = hasChildren(child);
+        const childrenExist = hasChildren(child, childKey);
         const showChildren = !collapsed.includes(child.id) && childrenExist;
-
         const button = childrenExist && renderCollapseButton(updatedEvent);
 
         const beforeButton = collapseButtonPosition === "before" && button;
@@ -89,12 +96,12 @@ export const NestedCollection = <T,>(
               style={generateStyle(childStyle, event)}
               {...generateLIProps(childProps, updatedEvent)}
             >
-              {createChild(child.data, updatedEvent)}
+              {createChild(child, updatedEvent)}
               {beforeButton}
               {showChildren && (
                 <NestedCollection
                   {...props}
-                  data={child.children}
+                  data={renderChildren(child, childKey)}
                   parent={child}
                   depth={depth + 1}
                 />

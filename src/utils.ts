@@ -3,15 +3,17 @@ import {
   LIPropsObjOrFunc,
   NCEvent,
   ButtonPropsObjOrFunc,
-  ChildSpec,
+  Child,
   LIProps,
   ULProps,
   ButtonProps,
   StyleObjOrFunc,
 } from "./types";
 
-export const hasChildren = <T>(child: ChildSpec<T>) =>
-  Boolean(child.children && child.children.length);
+export const hasChildren = <T>(child: Child<T>, childKey?: string) => {
+  const children = childKey ? child[childKey] : child.children;
+  return Boolean(children && children.length);
+};
 
 export const generateULProps = <T>(
   props: ULPropsObjOrFunc<T>,

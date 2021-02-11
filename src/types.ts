@@ -1,4 +1,7 @@
-type CreateChild<T> = (data: T, event: NCEvent<T>) => JSX.Element | string;
+type CreateChild<T> = (
+  child: Child<T>,
+  event: NCEvent<T>
+) => JSX.Element | string;
 type CreateCollapseButton<T> = (
   isCollapsed: boolean,
   event: NCEvent<T>
@@ -9,13 +12,17 @@ interface JSXAttributeProps {
   "data-id"?: string;
 }
 
-type CollapseChildren<T> = (event: NCEvent<T>) => boolean | void;
+export type CollapseChildren<T> = (event: NCEvent<T>) => boolean | void;
 
-export interface ChildSpec<T> {
-  data: T;
-  children?: ChildSpec<T>[];
-  id: number | string;
+export interface WithChildren<T> {
+  children?: T[];
 }
+
+export interface WithId {
+  id?: string | number;
+}
+
+export type Child<T> = WithChildren<T> & T & WithId;
 
 export type ULProps = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLUListElement>,
@@ -35,8 +42,8 @@ export type ButtonProps = React.DetailedHTMLProps<
 
 export interface NCEvent<T> {
   depth: number;
-  parent?: ChildSpec<T>;
-  child?: ChildSpec<T>;
+  parent?: Child<T>;
+  child?: Child<T>;
   position?: number;
 }
 
@@ -53,7 +60,8 @@ export type StyleObjOrFunc<T> =
   | ((event: NCEvent<T>) => React.CSSProperties);
 
 export interface NestedCollectionProps<T> {
-  data: ChildSpec<T>[];
+  childKey: string;
+  data: Child<T>[];
   parentClass?: string;
   childClass?: string;
   parentStyle?: StyleObjOrFunc<T>;
@@ -66,7 +74,7 @@ export interface NestedCollectionProps<T> {
   childProps?: LIPropsObjOrFunc<T>;
   buttonProps?: ButtonPropsObjOrFunc<T>;
   depth?: number;
-  parent?: ChildSpec<T>;
+  parent?: Child<T>;
   collapseButtonPosition?: CollapseButtonPosition;
   onCollapsed?: CollapseChildren<T>;
 }
