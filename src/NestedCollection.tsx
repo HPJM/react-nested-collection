@@ -6,10 +6,10 @@ export interface ChildSpec<T> {
   id: number | string;
 }
 
-type CreateChild<T> = (data: T, meta: Meta<T>) => JSX.Element | string;
+type CreateChild<T> = (data: T, event: NCEvent<T>) => JSX.Element | string;
 type CreateCollapseButton<T> = (
   isCollapsed: boolean,
-  meta: Meta<T>
+  event: NCEvent<T>
 ) => JSX.Element | string;
 
 interface JSXAttributeProps {
@@ -33,22 +33,24 @@ type ButtonProps = React.DetailedHTMLProps<
   HTMLButtonElement
 >;
 
-interface Meta<T> {
+interface NCEvent<T> {
   depth: number;
   parent?: ChildSpec<T>;
   child?: ChildSpec<T>;
   position?: number;
 }
 
-type ULPropsObjOrFunc<T> = ULProps | ((meta: Meta<T>) => ULProps);
-type LIPropsObjOrFunc<T> = LIProps | ((meta: Meta<T>) => LIProps);
-type ButtonPropsObjOrFunc<T> = ButtonProps | ((meta: Meta<T>) => ButtonProps);
+type ULPropsObjOrFunc<T> = ULProps | ((event: NCEvent<T>) => ULProps);
+type LIPropsObjOrFunc<T> = LIProps | ((event: NCEvent<T>) => LIProps);
+type ButtonPropsObjOrFunc<T> =
+  | ButtonProps
+  | ((event: NCEvent<T>) => ButtonProps);
 
-export type CollapseChildren<T> = (meta: Meta<T>) => boolean | void;
+export type CollapseChildren<T> = (event: NCEvent<T>) => boolean | void;
 
 type StyleObjOrFunc<T> =
   | React.CSSProperties
-  | ((meta: Meta<T>) => React.CSSProperties);
+  | ((event: NCEvent<T>) => React.CSSProperties);
 
 interface NestedCollectionProps<T> {
   data: ChildSpec<T>[];
@@ -74,28 +76,28 @@ const hasChildren = <T,>(child: ChildSpec<T>) =>
 
 const generateULProps = <T,>(
   props: ULPropsObjOrFunc<T>,
-  meta: Meta<T>
+  event: NCEvent<T>
 ): ULProps => {
   if (typeof props === "function") {
-    return props(meta);
+    return props(event);
   }
   return props;
 };
 const generateLIProps = <T,>(
   props: LIPropsObjOrFunc<T>,
-  meta: Meta<T>
+  event: NCEvent<T>
 ): LIProps => {
   if (typeof props === "function") {
-    return props(meta);
+    return props(event);
   }
   return props;
 };
 const generateButtonProps = <T,>(
   props: ButtonPropsObjOrFunc<T>,
-  meta: Meta<T>
+  event: NCEvent<T>
 ): ButtonProps => {
   if (typeof props === "function") {
-    return props(meta);
+    return props(event);
   }
   return props;
 };
@@ -104,10 +106,10 @@ type CollapseButtonPosition = "before" | "after";
 
 const generateStyle = <T,>(
   obj: StyleObjOrFunc<T>,
-  meta: Meta<T>
+  event: NCEvent<T>
 ): React.CSSProperties => {
   if (typeof obj === "function") {
-    return obj(meta);
+    return obj(event);
   }
   return obj;
 };
@@ -136,10 +138,10 @@ export const NestedCollection = <T,>(
 
   const [collapsed, setCollapsed] = useState([]);
 
-  const meta: Meta<T> = { depth, parent };
+  const event: NCEvent<T> = { depth, parent };
 
-  const renderCollapseButton = (meta: Meta<T>) => {
-    const { child } = meta;
+  const renderCollapseButton = (event: NCEvent<T>) => {
+    const { child } = event;
     if (!createCollapseButton) {
       return null;
     }
@@ -147,7 +149,7 @@ export const NestedCollection = <T,>(
       <button
         onClick={() => {
           if (onCollapsed) {
-            onCollapsed(meta);
+            onCollapsed(event);
           }
           setCollapsed((collapsed) =>
             collapsed.includes(child.id)
@@ -155,11 +157,11 @@ export const NestedCollection = <T,>(
               : [...collapsed, child.id]
           );
         }}
-        style={generateStyle(buttonStyle, meta)}
+        style={generateStyle(buttonStyle, event)}
         className={buttonClass}
-        {...generateButtonProps(buttonProps, meta)}
+        {...generateButtonProps(buttonProps, event)}
       >
-        {createCollapseButton(collapsed.includes(child.id), meta)}
+        {createCollapseButton(collapsed.includes(child.id), event)}
       </button>
     );
   };
@@ -167,12 +169,12 @@ export const NestedCollection = <T,>(
   return (
     <ul
       className={parentClass}
-      style={generateStyle(parentStyle, meta)}
-      {...generateULProps(parentProps, meta)}
+      style={generateStyle(parentStyle, event)}
+      {...generateULProps(parentProps, event)}
     >
       {data.map((child, index) => {
-        const updatedMeta = {
-          ...meta,
+        const updatedEvent = {
+          ...event,
           child,
           position: index,
         };
@@ -184,13 +186,13 @@ export const NestedCollection = <T,>(
           <React.Fragment key={child.id}>
             <li
               className={childClass}
-              style={generateStyle(childStyle, meta)}
-              {...generateLIProps(childProps, updatedMeta)}
+              style={generateStyle(childStyle, event)}
+              {...generateLIProps(childProps, updatedEvent)}
             >
-              {createChild(child.data, updatedMeta)}
+              {createChild(child.data, updatedEvent)}
               {collapseButtonPosition === "before" &&
                 childrenExist &&
-                renderCollapseButton(updatedMeta)}
+                renderCollapseButton(updatedEvent)}
               {showChildren && (
                 <NestedCollection
                   {...props}
@@ -201,7 +203,7 @@ export const NestedCollection = <T,>(
               )}
               {collapseButtonPosition === "after" &&
                 childrenExist &&
-                renderCollapseButton(updatedMeta)}
+                renderCollapseButton(updatedEvent)}
             </li>
           </React.Fragment>
         );
