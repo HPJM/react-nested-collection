@@ -59,15 +59,16 @@ export type StyleObjOrFunc<T> =
   | React.CSSProperties
   | ((event: NCEvent<T>) => React.CSSProperties);
 
+type ClassProp = string | ((event: NCEvent<T>) => string);
 export interface NestedCollectionProps<T> {
   childKey: string;
   data: Child<T>[];
-  parentClass?: string;
-  childClass?: string;
+  parentClass?: ClassProp;
+  childClass?: ClassProp;
   parentStyle?: StyleObjOrFunc<T>;
   childStyle?: StyleObjOrFunc<T>;
   buttonStyle?: StyleObjOrFunc<T>;
-  buttonClass?: string;
+  buttonClass?: string | ((event: NCEvent<T>) => string);
   createChild: CreateChild<T>;
   createCollapseButton?: CreateCollapseButton<T>;
   parentProps?: ULPropsObjOrFunc<T>;
@@ -76,5 +77,5 @@ export interface NestedCollectionProps<T> {
   depth?: number;
   parent?: Child<T>;
   collapseButtonPosition?: CollapseButtonPosition;
-  onCollapsed?: CollapseChildren<T>;
+  onCollapseClick?: CollapseChildren<T>;
 }

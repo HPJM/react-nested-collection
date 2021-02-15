@@ -34,7 +34,7 @@ export const NestedCollection = <T,>(
     parent = null,
     collapseButtonPosition = "before",
     createCollapseButton,
-    onCollapsed,
+    onCollapseClick,
     buttonClass,
     buttonStyle,
     buttonProps,
@@ -52,8 +52,8 @@ export const NestedCollection = <T,>(
     return (
       <button
         onClick={() => {
-          if (onCollapsed) {
-            onCollapsed(event);
+          if (onCollapseClick) {
+            onCollapseClick(event);
           }
           setCollapsed((collapsed) =>
             collapsed.includes(child.id)
@@ -62,7 +62,7 @@ export const NestedCollection = <T,>(
           );
         }}
         style={generateStyle(buttonStyle, event)}
-        className={buttonClass}
+        className={generateClassName(buttonClass, event)}
         {...generateButtonProps(buttonProps, event)}
       >
         {createCollapseButton(collapsed.includes(child.id), event)}

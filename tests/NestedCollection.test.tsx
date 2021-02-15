@@ -38,26 +38,22 @@ const comment2 = genComment({ comment: "js is cool" }, [
 const data: Child<Comment>[] = [comment1, comment2];
 
 const TestComponent = ({
-  onCollapsed,
+  onCollapseClick,
 }: {
-  onCollapsed?: CollapseChildren<Comment>;
+  onCollapseClick?: CollapseChildren<Comment>;
 }) => {
   return (
     <div>
       <NestedCollection
         data={data}
         childKey="replies"
-        onCollapsed={onCollapsed}
+        onCollapseClick={onCollapseClick}
         createChild={({ comment }, { position, depth }) =>
           `${position + 1}. ${comment} (${depth})`
         }
         createCollapseButton={(isCollapsed, { position, depth }) =>
           `${isCollapsed ? "Show" : "Hide"} ${depth}:${position + 1}`
         }
-        childProps={(meta) => ({
-          "data-testid": `${meta.depth}-${meta.position}`,
-        })}
-        collapseButtonPosition="before"
       />
     </div>
   );
